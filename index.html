@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Dagatan Act 2</title>
+</head>
+<body>
+    <form>
+            <div class="card">
+                <h1 class="card-title">Student Information</h1>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="id" class="form-label">ID</label>
+                        <input type="text" class="form-control" id="id">
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="age" class="form-label">Age</label>
+                        <input type="text" class="form-control" id="age">
+                    </div>
+                    <button type="button" class="btn btn-group" id="addButton" onclick="addOrUpdateData()">Add</button>
+                    <button type="button" class="btn btn-group" id="removeButton" onclick="removeData()">Remove</button>
+                    <button type="button" class="btn btn-group" id="editButton" onclick="editMode()">Edit</button>
+
+                    <p id="output"></p>
+                              
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>NAME</th>
+                                <th>AGE</th>
+                            </tr>
+                        </thead>
+                        <tbody id="data-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+    </form>
+
+    <script>
+        let data = [];
+        let editModeActive = false;
+        let editingIndex = -1;
+
+        function addOrUpdateData() {
+            if (editModeActive) {
+                const id = document.getElementById("id").value;
+                const name = document.getElementById("name").value;
+                const age = document.getElementById("age").value;
+
+                if (editingIndex !== -1) {
+                    data[editingIndex] = { id, name, age };
+                    editingIndex = -1;
+                }
+                updateTable();
+                resetForm();
+                toggleAddButton();
+            } else {
+                const id = document.getElementById("id").value;
+                const name = document.getElementById("name").value;
+                const age = document.getElementById("age").value;
+                
+                data.push({ id, name, age });
+                updateTable();
+                resetForm();
+            }
+        }
+
+        function removeData() {
+            const idToRemove = document.getElementById("id").value;
+            const itemIndexToRemove = data.findIndex(item => item.id === idToRemove);
+    
+            if (itemIndexToRemove === -1) {
+                alert("Data with the specified ID doesn't exist.");
+            } else {
+                data.splice(itemIndexToRemove, 1);
+                updateTable();
+                resetForm();
+            }
+        }
+
+        function editMode() {
+            const idToEdit = document.getElementById("id").value;
+            const foundIndex = data.findIndex(item => item.id === idToEdit);
+
+            if (foundIndex !== -1) {
+                const itemToEdit = data[foundIndex];
+                document.getElementById("id").value = itemToEdit.id;
+                document.getElementById("name").value = itemToEdit.name;
+                document.getElementById("age").value = itemToEdit.age;
+                editingIndex = foundIndex;
+                toggleAddButton();
+                editModeActive = true;
+            } else {
+                alert("Data with the specified ID doesn't exist.");
+            }
+        }
+
+        function updateTable() {
+            const tableBody = document.getElementById("data-table-body");
+            tableBody.innerHTML = "";
+
+            for (const item of data) {
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>${item.id}</td><td>${item.name}</td><td>${item.age}</td>`;
+                tableBody.appendChild(row);
+            }
+        }
+
+        function resetForm() {
+            document.getElementById("id").value = "";
+            document.getElementById("name").value = "";
+            document.getElementById("age").value = "";
+        }
+
+        function toggleAddButton() {
+            const addButton = document.getElementById("addButton");
+            if (editModeActive) {
+                addButton.textContent = "Add";
+            } else {
+                addButton.textContent = "Update";
+            }
+            editModeActive = !editModeActive;
+        }
+    </script>
+</body>
+</html>
